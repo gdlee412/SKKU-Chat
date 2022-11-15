@@ -1,0 +1,62 @@
+<!doctype HTML>
+<html>
+    <head>
+        <title>SKKU-CHAT</title>
+        <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Counter</h1>
+            <p>
+            Visits so far: <span id="counter"></span>
+            </p>
+            <h2>Chat</h2>
+                <ul id="chats">
+                </ul>
+                <div class="d-flex">
+                    <input type="text" id="chat" class="form-control" placeholder="Enter a chat here">
+                    <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+                </div>
+        <script>
+            setInterval(loadChats, 1000); //implements polling
+            window.addEventListener("load", () => {
+                fetch("/counter", { method: "GET" })
+                .then((res) => res.text())
+                .then((count) => {
+                    let counter = document.getElementById("counter");
+                    counter.textContent = count;
+                    })
+            })
+
+            function loadChats() {
+                fetch("/chats", { method: "GET" })
+                .then((res) => res.json())
+                .then((chats) => {
+                    let list = document.getElementById("chats");
+                    list.innerHTML = "";
+                    chats.forEach(chat => {
+                        let li = document.createElement("li")
+                        li.textContent = chat;
+                        list.appendChild(li);
+                    })
+                })
+            }
+
+            document.getElementById("submit").addEventListener("click", () => {
+                let input = document.getElementById("chat");
+                let chat = input.value;
+                fetch("/chats", {
+                    method: "POST",
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ chat })
+                })
+                .then(() => {
+                    loadChats();
+                })
+            })
+        </script>
+    </body>
+</html>
