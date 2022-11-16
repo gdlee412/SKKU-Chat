@@ -55,7 +55,28 @@
                 })
                 .then(() => {
                     loadChats();
+                    input.value = "";
                 })
+            })
+
+            let inputbar = document.querySelector("#chat");
+            inputbar.addEventListener("keyup", (e) => {
+                if(e.keyCode === 13)
+                {
+                    let input = document.getElementById("chat");
+                    let chat = input.value;
+                    fetch("/chats", {
+                        method: "POST",
+                        headers: {
+                        'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ chat })
+                    })
+                    .then(() => {
+                        loadChats();
+                        input.value = "";
+                    })
+                }
             })
         </script>
     </body>
